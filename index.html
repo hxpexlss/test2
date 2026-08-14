@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kniffelblock</title>
+<style>
+  :root {
+    --bg: #f4f1ea;
+    --card: #ffffff;
+    --accent: #b3382c;
+    --accent-light: #e8a798;
+    --line: #ddd6c9;
+    --text: #2b2620;
+    --sub: #8a8272;
+    --upper-bg: #fbf7ee;
+    --lower-bg: #f6f2e8;
+    --total-bg: #f0e4d8;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    padding: 12px;
+  }
+  h1 {
+    text-align: center;
+    font-size: 1.4rem;
+    margin: 8px 0 4px;
+    letter-spacing: 1px;
+  }
+  .sub {
+    text-align: center;
+    color: var(--sub);
+    font-size: 0.85rem;
+    margin-bottom: 14px;
+  }
+  .controls {
+    max-width: 700px;
+    margin: 0 auto 14px;
+    background: var(--card);
+    border-radius: 10px;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    flex-wrap: wrap;
+  }
+  .controls label {
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+  .controls select, .controls button {
+    font-size: 0.9rem;
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    background: #fff;
+  }
+  .controls button {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+  }
+  .controls button:active { opacity: 0.85; }
+
+  .table-wrap {
+    max-width: 700px;
+    margin: 0 auto;
+    overflow-x: auto;
+    background: var(--card);
+    border-radius: 10px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+  }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    min-width: 320px;
+  }
+  th, td {
+    padding: 6px 8px;
+    text-align: center;
+    border-bottom: 1px solid var(--line);
+    font-size: 0.9rem;
+  }
+  th {
+    background: var(--accent);
+    color: #fff;
+    font-weight: 600;
+    position: sticky;
+    top: 0;
+  }
+  th input[type="text"] {
+    width: 90%;
+    padding: 4px 4px;
+    text-align: center;
+    border: 1px solid rgba(255,255,255,0.5);
+    border-radius: 6px;
+    font-size: 0.85rem;
+    background: rgba(255,255,255,0.15);
+    color: #fff;
+    font-weight: 600;
+  }
+  th input[type="text"]::placeholder { color: rgba(255,255,255,0.75); }
+  th input[type="text"]:focus {
+    outline: none;
+    background: #fff;
+    color: var(--text);
+  }
+  td.label {
+    text-align: left;
+    font-weight: 500;
+    white-space: nowrap;
+    min-width: 140px;
+  }
+  tr.section-row td {
+    background: var(--upper-bg);
+    font-weight: 700;
+    text-align: left;
+    color: var(--accent);
+    letter-spacing: 0.5px;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+  }
+  tr.lower-section td { background: var(--lower-bg); }
+  tr.total-row td {
+    background: var(--total-bg);
+    font-weight: 700;
+  }
+  tr.grand-row td {
+    background: var(--accent);
+    color: #fff;
+    font-weight: 700;
+    font-size: 1rem;
+  }
+  input[type="text"].num-input {
+    width: 48px;
+    padding: 6px 2px;
+    text-align: center;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    font-size: 0.95rem;
+    background: #fffdf9;
+  }
+  input[type="text"].num-input:focus {
+    outline: 2px solid var(--accent-light);
+    border-color: var(--accent);
+  }
+  input[type="checkbox"] {
+    width: 22px;
+    height: 22px;
+    accent-color: var(--accent);
+    cursor: pointer;
+  }
+  select.kniffel-select {
+    font-size: 1rem;
+    padding: 6px 8px;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    background: #fffdf9;
+    color: var(--text);
+    min-width: 56px;
+  }
+  select.kniffel-select:focus {
+    outline: 2px solid var(--accent-light);
+    border-color: var(--accent);
+  }
+  .calc {
+    font-weight: 700;
+  }
+  td.struck {
+    position: relative;
+    background: repeating-linear-gradient(135deg, #eee2d6, #eee2d6 6px, #e3d5c4 6px, #e3d5c4 12px);
+  }
+  td.struck input[type="text"].num-input {
+    background: transparent;
+    border-color: transparent;
+    color: transparent;
+  }
+  td.struck::after {
+    content: "✕";
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--accent);
+    font-weight: 700;
+    font-size: 1rem;
+  }
+  td.struck input[type="checkbox"] {
+    visibility: hidden;
+  }
+  .strike-hint {
+    text-align: center;
+    color: var(--sub);
+    font-size: 0.72rem;
+    margin: 6px 0 0;
+  }
+  .hint {
+    font-size: 0.65rem;
+    color: var(--sub);
+    display: block;
+    font-weight: 400;
+  }
+  footer {
+    text-align: center;
+    color: var(--sub);
+    font-size: 0.75rem;
+    margin: 16px 0 4px;
+  }
+</style>
+</head>
+<body>
+
+<h1>🎲 Kniffelblock</h1>
+<div class="sub">Punkte eintragen – Zwischen- und Gesamtsumme werden automatisch berechnet</div>
+
+<div class="controls">
+  <div>
+    <label for="playerCount">Spieleranzahl:</label>
+    <select id="playerCount">
+      <option value="1">1</option>
+      <option value="2">2</option>
+      <option value="3">3</option>
+      <option value="4" selected>4</option>
+    </select>
+  </div>
+  <button id="resetBtn">Neues Spiel</button>
+</div>
+
+<div class="table-wrap">
+  <table id="kniffelTable">
+    <thead>
+      <tr id="headerRow">
+        <th style="text-align:left;">Kategorie</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+  </table>
+</div>
+
+<div class="strike-hint">Feld lange gedrückt halten, um eine Kategorie zu streichen (0 Punkte)</div>
+<footer>Zahlenfelder öffnen automatisch die numerische Tastatur</footer>
+
+<script>
+  // Kategorien mit freier Zahleneingabe
+  const upperCategories = [
+    { id: "ones", label: "Einser", hint: "nur Augen zählen" },
+    { id: "twos", label: "Zweier", hint: "nur Augen zählen" },
+    { id: "threes", label: "Dreier", hint: "nur Augen zählen" },
+    { id: "fours", label: "Vierer", hint: "nur Augen zählen" },
+    { id: "fives", label: "Fünfer", hint: "nur Augen zählen" },
+    { id: "sixes", label: "Sechser", hint: "nur Augen zählen" },
+  ];
+  // Kategorien mit freier Zahleneingabe im unteren Block
+  const lowerFreeCategories = [
+    { id: "threeKind", label: "Dreierpasch", hint: "Summe aller Würfel" },
+    { id: "fourKind", label: "Viererpasch", hint: "Summe aller Würfel" },
+    { id: "chance", label: "Chance", hint: "Summe aller Würfel" },
+  ];
+  // Kategorien mit festem Punktewert -> Checkbox
+  const fixedCategories = [
+    { id: "fullHouse", label: "Full House", points: 25 },
+    { id: "smallStreet", label: "Kleine Straße", points: 30 },
+    { id: "bigStreet", label: "Große Straße", points: 40 },
+    { id: "kniffel", label: "Kniffel", points: 50 },
+  ];
+
+  const MAX_PLAYERS = 4;
+  const MAX_KNIFFEL_BONUS = 4; // Anzahl zusätzlicher Kniffel-Häkchen
+  const STORAGE_KEY = "kniffelblock_data_v2";
+
+  let playerCount = 4;
+  let data = {};   // data[p][catId] = zahl (obere/freie Kategorien)
+  let checks = {};  // checks[p][catId] = true/false (Festwerte)
+  let kniffelBonus = {}; // kniffelBonus[p] = Anzahl zusätzlicher Kniffel (0..MAX_KNIFFEL_BONUS)
+  let names = {};   // names[p] = string
+  let struck = {};  // struck[p][catId] = true/false (gestrichene Kategorie)
+
+  function emptyState(n) {
+    const d = {}, c = {}, kb = {}, nm = {}, st = {};
+    for (let p = 0; p < n; p++) { d[p] = {}; c[p] = {}; kb[p] = 0; nm[p] = ""; st[p] = {}; }
+    return { d, c, kb, nm, st };
+  }
+
+  // Long-Press-Erkennung (Touch & Maus), funktioniert unabhängig vom Feldtyp
+  function attachLongPress(el, onLongPress, threshold = 550) {
+    let timer = null;
+    let fired = false;
+    const start = (e) => {
+      fired = false;
+      timer = setTimeout(() => {
+        fired = true;
+        onLongPress();
+      }, threshold);
+    };
+    const cancel = () => {
+      if (timer) { clearTimeout(timer); timer = null; }
+    };
+    el.addEventListener("touchstart", start, { passive: true });
+    el.addEventListener("touchend", cancel);
+    el.addEventListener("touchmove", cancel);
+    el.addEventListener("mousedown", start);
+    el.addEventListener("mouseup", cancel);
+    el.addEventListener("mouseleave", cancel);
+    el.addEventListener("contextmenu", (e) => e.preventDefault());
+    // Verhindert, dass nach einem Long-Press zusätzlich ein normaler Klick/Fokus feuert
+    el.addEventListener("click", (e) => { if (fired) { e.preventDefault(); e.stopPropagation(); fired = false; } }, true);
+  }
+
+  function loadFromStorage() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        playerCount = parsed.playerCount || 4;
+        data = parsed.data || {};
+        checks = parsed.checks || {};
+        kniffelBonus = parsed.kniffelBonus || {};
+        names = parsed.names || {};
+        struck = parsed.struck || {};
+        for (let p = 0; p < playerCount; p++) {
+          if (!data[p]) data[p] = {};
+          if (!checks[p]) checks[p] = {};
+          if (kniffelBonus[p] === undefined) kniffelBonus[p] = 0;
+          if (names[p] === undefined) names[p] = "";
+          if (!struck[p]) struck[p] = {};
+        }
+      } else {
+        const s = emptyState(playerCount);
+        data = s.d; checks = s.c; kniffelBonus = s.kb; names = s.nm; struck = s.st;
+      }
+    } catch (e) {
+      const s = emptyState(playerCount);
+      data = s.d; checks = s.c; kniffelBonus = s.kb; names = s.nm; struck = s.st;
+    }
+  }
+
+  function saveToStorage() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ playerCount, data, checks, kniffelBonus, names, struck }));
+    } catch (e) {
+      // ignore
+    }
+  }
+
+  function buildHeader() {
+    const headerRow = document.getElementById("headerRow");
+    headerRow.innerHTML = '<th style="text-align:left;">Kategorie</th>';
+    for (let p = 0; p < playerCount; p++) {
+      const th = document.createElement("th");
+      const input = document.createElement("input");
+      input.type = "text";
+      input.placeholder = "Spieler " + (p + 1);
+      input.maxLength = 16;
+      input.value = names[p] || "";
+      input.addEventListener("input", () => {
+        names[p] = input.value;
+        saveToStorage();
+      });
+      th.appendChild(input);
+      headerRow.appendChild(th);
+    }
+  }
+
+  function makeNumberCell(playerIdx, catId) {
+    const td = document.createElement("td");
+    const isStruck = !!(struck[playerIdx] && struck[playerIdx][catId]);
+    if (isStruck) td.classList.add("struck");
+    const input = document.createElement("input");
+    input.type = "text";
+    input.className = "num-input";
+    input.inputMode = "numeric";
+    input.pattern = "[0-9]*";
+    input.maxLength = 3;
+    input.autocomplete = "off";
+    input.disabled = isStruck;
+    input.value = (data[playerIdx] && data[playerIdx][catId] !== undefined) ? data[playerIdx][catId] : "";
+    input.addEventListener("input", () => {
+      input.value = input.value.replace(/[^0-9]/g, "");
+      data[playerIdx][catId] = input.value === "" ? undefined : parseInt(input.value, 10);
+      saveToStorage();
+      recalc();
+    });
+    td.appendChild(input);
+    attachLongPress(td, () => {
+      const nowStruck = !(struck[playerIdx] && struck[playerIdx][catId]);
+      struck[playerIdx][catId] = nowStruck;
+      if (nowStruck) data[playerIdx][catId] = undefined; // gestrichen = 0 Punkte
+      saveToStorage();
+      recalc();
+      buildTable();
+    });
+    return td;
+  }
+
+  function makeCheckCell(playerIdx, cat) {
+    const td = document.createElement("td");
+    const isStruck = !!(struck[playerIdx] && struck[playerIdx][cat.id]);
+    if (isStruck) td.classList.add("struck");
+    const input = document.createElement("input");
+    input.type = "checkbox";
+    input.disabled = isStruck;
+    input.checked = !!(checks[playerIdx] && checks[playerIdx][cat.id]);
+    input.addEventListener("change", () => {
+      checks[playerIdx][cat.id] = input.checked;
+      saveToStorage();
+      recalc();
+    });
+    td.appendChild(input);
+    attachLongPress(td, () => {
+      const nowStruck = !(struck[playerIdx] && struck[playerIdx][cat.id]);
+      struck[playerIdx][cat.id] = nowStruck;
+      if (nowStruck) checks[playerIdx][cat.id] = false; // gestrichen = 0 Punkte
+      saveToStorage();
+      recalc();
+      buildTable();
+    });
+    return td;
+  }
+
+  function makeKniffelBonusCell(playerIdx) {
+    const td = document.createElement("td");
+    const select = document.createElement("select");
+    select.className = "kniffel-select";
+    for (let i = 0; i <= MAX_KNIFFEL_BONUS; i++) {
+      const opt = document.createElement("option");
+      opt.value = i;
+      opt.textContent = i === 0 ? "–" : i + "×";
+      select.appendChild(opt);
+    }
+    select.value = kniffelBonus[playerIdx] || 0;
+    select.addEventListener("change", () => {
+      kniffelBonus[playerIdx] = parseInt(select.value, 10);
+      saveToStorage();
+      recalc();
+    });
+    td.appendChild(select);
+    return td;
+  }
+
+  function sectionRow(label) {
+    const tr = document.createElement("tr");
+    tr.className = "section-row";
+    const td = document.createElement("td");
+    td.colSpan = 1 + playerCount;
+    td.textContent = label;
+    tr.appendChild(td);
+    return tr;
+  }
+
+  function categoryRowFree(cat, lower) {
+    const tr = document.createElement("tr");
+    if (lower) tr.className = "lower-section";
+    const tdLabel = document.createElement("td");
+    tdLabel.className = "label";
+    tdLabel.innerHTML = cat.label + '<span class="hint">' + cat.hint + '</span>';
+    tr.appendChild(tdLabel);
+    for (let p = 0; p < playerCount; p++) {
+      tr.appendChild(makeNumberCell(p, cat.id));
+    }
+    return tr;
+  }
+
+  function categoryRowFixed(cat) {
+    const tr = document.createElement("tr");
+    tr.className = "lower-section";
+    const tdLabel = document.createElement("td");
+    tdLabel.className = "label";
+    tdLabel.innerHTML = cat.label + '<span class="hint">' + cat.points + ' Punkte</span>';
+    tr.appendChild(tdLabel);
+    for (let p = 0; p < playerCount; p++) {
+      tr.appendChild(makeCheckCell(p, cat));
+    }
+    return tr;
+  }
+
+  function kniffelBonusRow() {
+    const tr = document.createElement("tr");
+    tr.className = "lower-section";
+    const tdLabel = document.createElement("td");
+    tdLabel.className = "label";
+    tdLabel.innerHTML = "Weitere Kniffel" + '<span class="hint">je +100 Punkte</span>';
+    tr.appendChild(tdLabel);
+    for (let p = 0; p < playerCount; p++) {
+      tr.appendChild(makeKniffelBonusCell(p));
+    }
+    return tr;
+  }
+
+  function calcRow(id, label) {
+    const tr = document.createElement("tr");
+    tr.className = "total-row";
+    const tdLabel = document.createElement("td");
+    tdLabel.className = "label";
+    tdLabel.textContent = label;
+    tr.appendChild(tdLabel);
+    for (let p = 0; p < playerCount; p++) {
+      const td = document.createElement("td");
+      td.className = "calc";
+      td.id = id + "_" + p;
+      td.textContent = "0";
+      tr.appendChild(td);
+    }
+    return tr;
+  }
+
+  function grandRow() {
+    const tr = document.createElement("tr");
+    tr.className = "grand-row";
+    const tdLabel = document.createElement("td");
+    tdLabel.className = "label";
+    tdLabel.textContent = "Gesamt";
+    tr.appendChild(tdLabel);
+    for (let p = 0; p < playerCount; p++) {
+      const td = document.createElement("td");
+      td.className = "calc";
+      td.id = "grand_" + p;
+      td.textContent = "0";
+      tr.appendChild(td);
+    }
+    return tr;
+  }
+
+  function buildTable() {
+    buildHeader();
+    const body = document.getElementById("tableBody");
+    body.innerHTML = "";
+
+    body.appendChild(sectionRow("Oberer Block"));
+    upperCategories.forEach(cat => body.appendChild(categoryRowFree(cat, false)));
+    body.appendChild(calcRow("upperSum", "Summe oben"));
+    body.appendChild(calcRow("bonus", "Bonus (ab 63 Pkt: +35)"));
+    body.appendChild(calcRow("upperTotal", "Gesamt oben"));
+
+    body.appendChild(sectionRow("Unterer Block"));
+    body.appendChild(categoryRowFree(lowerFreeCategories[0], true)); // Dreierpasch
+    body.appendChild(categoryRowFree(lowerFreeCategories[1], true)); // Viererpasch
+    fixedCategories.forEach(cat => body.appendChild(categoryRowFixed(cat)));
+    body.appendChild(kniffelBonusRow());
+    body.appendChild(categoryRowFree(lowerFreeCategories[2], true)); // Chance
+    body.appendChild(calcRow("lowerSum", "Summe unten"));
+
+    body.appendChild(grandRow());
+
+    recalc();
+  }
+
+  function recalc() {
+    for (let p = 0; p < playerCount; p++) {
+      const pd = data[p] || {};
+      const pc = checks[p] || {};
+
+      let upperSum = 0;
+      upperCategories.forEach(c => { upperSum += (pd[c.id] || 0); });
+      const bonus = upperSum >= 63 ? 35 : 0;
+      const upperTotal = upperSum + bonus;
+
+      let lowerSum = 0;
+      lowerFreeCategories.forEach(c => { lowerSum += (pd[c.id] || 0); });
+      fixedCategories.forEach(c => { if (pc[c.id]) lowerSum += c.points; });
+      lowerSum += (kniffelBonus[p] || 0) * 100;
+
+      const grand = upperTotal + lowerSum;
+
+      document.getElementById("upperSum_" + p).textContent = upperSum;
+      document.getElementById("bonus_" + p).textContent = bonus;
+      document.getElementById("upperTotal_" + p).textContent = upperTotal;
+      document.getElementById("lowerSum_" + p).textContent = lowerSum;
+      document.getElementById("grand_" + p).textContent = grand;
+    }
+  }
+
+  document.getElementById("playerCount").addEventListener("change", (e) => {
+    playerCount = Math.min(MAX_PLAYERS, parseInt(e.target.value, 10));
+    for (let p = 0; p < playerCount; p++) {
+      if (!data[p]) data[p] = {};
+      if (!checks[p]) checks[p] = {};
+      if (kniffelBonus[p] === undefined) kniffelBonus[p] = 0;
+      if (names[p] === undefined) names[p] = "";
+      if (!struck[p]) struck[p] = {};
+    }
+    saveToStorage();
+    buildTable();
+  });
+
+  document.getElementById("resetBtn").addEventListener("click", () => {
+    if (confirm("Neues Spiel starten? Alle Punkte werden gelöscht (Namen bleiben erhalten).")) {
+      const keepNames = names;
+      const s = emptyState(playerCount);
+      data = s.d; checks = s.c; kniffelBonus = s.kb; names = keepNames; struck = s.st;
+      saveToStorage();
+      buildTable();
+    }
+  });
+
+  // Init
+  loadFromStorage();
+  document.getElementById("playerCount").value = playerCount;
+  buildTable();
+</script>
+
+</body>
+</html>
