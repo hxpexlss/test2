@@ -1,0 +1,48 @@
+name: Android APK (Click Bridge)
+
+on:
+  push:
+    paths:
+      - "zwift-click-bridge/android/**"
+      - ".github/workflows/android-apk.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: zwift-click-bridge/android
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Test and build APK
+        run: |
+          chmod +x gradlew
+          ./gradlew --no-daemon testDebugUnitTest assembleDebug
+          cp app/build/outputs/apk/debug/app-debug.apk ClickBridge.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ClickBridge-apk
+          path: zwift-click-bridge/android/ClickBridge.apk
+
+      - name: Publish as release (download on the phone)
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: click-bridge-android-${{ github.run_number }}
+          name: Click Bridge Android ${{ github.run_number }}
+          target_commitish: ${{ github.sha }}
+          prerelease: true
+          files: zwift-click-bridge/android/ClickBridge.apk
+          body: |
+            Android-App: Zwift Click -> MyWhoosh (über MyWhoosh Link).
+            Anleitung: zwift-click-bridge/README.md
