@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.ClipDL" parent="Theme.Material3.DayNight">
+        <item name="colorPrimary">#C62828</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorPrimaryContainer">#FFDAD6</item>
+        <item name="colorOnPrimaryContainer">#410002</item>
+        <item name="colorSecondaryContainer">#FFDAD6</item>
+        <item name="colorOnSecondaryContainer">#410002</item>
+    </style>
+</resources>

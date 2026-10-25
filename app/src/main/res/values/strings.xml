@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ClipDL</string>
+    <string name="hint_url">YouTube-Link</string>
+    <string name="hint_start">Start</string>
+    <string name="hint_end">Ende</string>
+    <string name="time_help">Zeiten als Sekunden, M:SS oder H:MM:SS. Leer lassen = Anfang bzw. Ende des Videos.</string>
+    <string name="download">Als MP3 herunterladen</string>
+    <string name="cancel">Abbrechen</string>
+    <string name="open">Abspielen</string>
+    <string name="update">yt-dlp aktualisieren</string>
+
+    <string name="status_init">Initialisiere yt-dlp und ffmpeg (beim ersten Start kann das etwas dauern)…</string>
+    <string name="status_init_failed">Initialisierung fehlgeschlagen: %1$s</string>
+    <string name="status_ready">Bereit. Link einfügen oder aus der YouTube-App teilen.</string>
+    <string name="status_downloading">Lade herunter und wandle um…</string>
+    <string name="status_progress">%1$d %% – noch ca. %2$d s</string>
+    <string name="status_saving">Speichere in Musik/ClipDL…</string>
+    <string name="status_done">Fertig: Musik/ClipDL/%1$s</string>
+    <string name="status_canceled">Abgebrochen.</string>
+    <string name="status_error">Fehler – Details siehe Log. Tipp: yt-dlp aktualisieren.</string>
+    <string name="status_updating">Aktualisiere yt-dlp…</string>
+    <string name="status_updated">yt-dlp: %1$s (Version %2$s)</string>
+    <string name="status_update_failed">Update fehlgeschlagen: %1$s</string>
+
+    <string name="error_url">Bitte einen gültigen Link eingeben</string>
+    <string name="error_time">Ungültiges Format</string>
+    <string name="error_order">Ende muss nach dem Start liegen</string>
+    <string name="error_no_file">Keine MP3-Datei erzeugt</string>
+    <string name="error_save">Datei konnte nicht gespeichert werden</string>
+    <string name="error_no_player">Keine App zum Abspielen gefunden</string>
+</resources>
