@@ -39,6 +39,7 @@ class BridgeService : Service() {
     private val handler = Handler(Looper.getMainLooper())
     private var click: ClickConnection? = null
     private var link: WhooshLinkServer? = null
+    private var obc: ObcServer? = null
 
     override fun onBind(intent: Intent?): IBinder? = null
 
@@ -48,12 +49,20 @@ class BridgeService : Service() {
         BridgeState.running = true
         BridgeState.service = this
 
-        link = WhooshLinkServer { status -> handler.post { setWhooshStatus(status) } }.also {
+        // OpenBikeControl is what MyWhoosh finds by itself (connection screen, icon top right).
+        obc = ObcServer(this) { status -> handler.post { setWhooshStatus(status) } }.also {
             try {
                 it.start()
-                setWhooshStatus("Warte auf MyWhoosh (Port ${WhooshLinkServer.PORT}) …")
             } catch (e: IOException) {
-                setWhooshStatus("Port ${WhooshLinkServer.PORT} belegt – läuft die MyWhoosh-Link-App noch?")
+                setWhooshStatus("OpenBikeControl konnte nicht starten: ${e.message}")
+            }
+        }
+        // MyWhoosh Link as a fallback; only used while no OpenBikeControl connection exists.
+        link = WhooshLinkServer { status -> handler.post { setWhooshStatus("Link: $status") } }.also {
+            try {
+                it.start()
+            } catch (e: IOException) {
+                BridgeState.addLog("Link-Port ${WhooshLinkServer.PORT} belegt (MyWhoosh-Link-App offen?)")
             }
         }
 
@@ -67,14 +76,21 @@ class BridgeService : Service() {
     }
 
     fun shift(direction: ZwiftProtocol.Shift) {
-        val link = link ?: return
         val label = if (direction == ZwiftProtocol.Shift.UP) "hoch" else "runter"
-        if (link.connectedClients == 0) {
-            BridgeState.addLog("Schalten $label – aber MyWhoosh ist nicht verbunden")
-        } else {
-            BridgeState.addLog("Schalten $label")
+        val obc = obc
+        val link = link
+        // Only one path at a time, otherwise MyWhoosh would shift twice.
+        when {
+            obc != null && obc.connectedClients > 0 -> {
+                obc.shift(direction)
+                BridgeState.addLog("Schalten $label")
+            }
+            link != null && link.connectedClients > 0 -> {
+                link.shift(direction)
+                BridgeState.addLog("Schalten $label (Link)")
+            }
+            else -> BridgeState.addLog("Schalten $label – aber MyWhoosh ist nicht verbunden")
         }
-        link.shift(direction)
         BridgeState.listener?.invoke()
     }
 
@@ -126,6 +142,7 @@ class BridgeService : Service() {
     override fun onDestroy() {
         click?.stop()
         link?.stop()
+        obc?.stop()
         BridgeState.running = false
         BridgeState.service = null
         BridgeState.clickStatus = "–"

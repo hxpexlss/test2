@@ -7,7 +7,7 @@ gerade passt:
 |---|---|---|
 | Läuft auf | MacBook (Terminal) | Android-Handy |
 | MyWhoosh läuft auf | demselben MacBook | beliebigem Gerät im selben WLAN (Mac, iPad, Apple TV, Android, auch dasselbe Handy) |
-| Schaltet über | Tasten **I** / **K** | **MyWhoosh Link** (offizielle Begleit-App-Schnittstelle) |
+| Schaltet über | Tasten **I** / **K** | **OpenBikeControl** (in MyWhoosh eingebaut), alternativ MyWhoosh Link |
 
 Belegung, bei beiden gleich:
 
@@ -64,10 +64,10 @@ Wenn die Verbindung abbricht, verbindet sich das Programm automatisch neu.
 
 ## Android-App
 
-Das Handy verbindet sich mit dem Click und schickt die Schaltbefehle über das
-WLAN an MyWhoosh. Es tut so, als wäre es die offizielle App „MyWhoosh Link“.
-Deshalb darf MyWhoosh auf einem beliebigen Gerät laufen, solange es im selben
-WLAN ist wie das Handy.
+Das Handy verbindet sich mit dem Click und meldet sich im WLAN als
+OpenBikeControl-Controller an. MyWhoosh findet ihn dort von selbst. Deshalb darf
+MyWhoosh auf einem beliebigen Gerät laufen, solange es im selben WLAN ist wie
+das Handy.
 
 ### Installieren
 
@@ -80,14 +80,17 @@ WLAN ist wie das Handy.
 
 ### Benutzung
 
-1. **Die App „MyWhoosh Link“ schließen**, falls sie installiert ist. Sie
-   belegt sonst dieselbe Verbindung.
-2. **Click Bridge** öffnen → **Starten** → Bluetooth und Benachrichtigungen erlauben.
-3. Eine Taste am Click drücken. Es erscheint `Click: ✅ Zwift Click verbunden`.
-4. MyWhoosh starten und im Verbindungs- bzw. Pairing-Bildschirm nach
-   **MyWhoosh Link** suchen. Sobald MyWhoosh verbunden ist, steht in der App
-   `MyWhoosh: MyWhoosh verbunden`.
-5. Mit **Test: hoch** und **Test: runter** kannst du das Schalten auch ohne Click ausprobieren.
+1. **Click Bridge** öffnen → **Starten** → Bluetooth und Benachrichtigungen erlauben.
+2. Eine Taste am Click drücken. Es erscheint `Click: ✅ Zwift Click verbunden`.
+3. In MyWhoosh den **Verbindungsbildschirm** öffnen (dort, wo du den Trainer verbindest).
+4. Oben rechts auf das **OpenBikeControl**-Symbol tippen. Dort erscheint
+   **Click Bridge**. Auswählen und im Popup mit **Ja** bestätigen.
+5. In der App steht jetzt `MyWhoosh: MyWhoosh verbunden`.
+6. Mit **Test: hoch** und **Test: runter** kannst du das Schalten auch ohne Click ausprobieren.
+
+Die App bietet zusätzlich die ältere Schnittstelle „MyWhoosh Link“ an. Sie wird
+nur benutzt, solange MyWhoosh nicht über OpenBikeControl verbunden ist. Dafür
+muss die echte App „MyWhoosh Link“ geschlossen sein.
 
 Die App läuft im Hintergrund weiter, auch bei ausgeschaltetem Bildschirm. Man
 erkennt das an der Benachrichtigung. Zum Beenden in der App **Stoppen** tippen.
@@ -95,8 +98,10 @@ erkennt das an der Benachrichtigung. Zum Beenden in der App **Stoppen** tippen.
 **Wenn MyWhoosh die App nicht findet:**
 
 - Handy und MyWhoosh-Gerät im **selben WLAN**, kein Gäste-WLAN, kein VPN.
-- Manchen hilft es, einmal die echte „MyWhoosh Link“-App mit MyWhoosh zu
-  verbinden, sie wieder zu schließen und dann Click Bridge zu starten.
+- In Click Bridge muss unter MyWhoosh `Sichtbar als „Click Bridge“` stehen.
+  Falls nicht: **Stoppen** und wieder **Starten**.
+- Läuft MyWhoosh auf iPhone, iPad oder Mac: In den Einstellungen bei MyWhoosh
+  **Lokales Netzwerk** erlauben.
 - Router-Option „AP-/Client-Isolation“ ausschalten, falls vorhanden.
 
 ---
