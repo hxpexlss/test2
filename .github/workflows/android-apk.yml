@@ -41,7 +41,8 @@ jobs:
           tag_name: click-bridge-android-${{ github.run_number }}
           name: Click Bridge Android ${{ github.run_number }}
           target_commitish: ${{ github.sha }}
-          prerelease: true
+          prerelease: false
+          make_latest: true
           files: zwift-click-bridge/android/ClickBridge.apk
           body: |
             Android-App: Zwift Click -> MyWhoosh (über MyWhoosh Link).
